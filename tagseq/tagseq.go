@@ -33,26 +33,30 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		if !ok {
 			return
 		}
+		knownNames := make(map[string]bool)
 		for _, field := range st.Fields.List {
 			if field.Tag == nil {
 				continue
 			}
 			tagVal := strings.Trim(field.Tag.Value, "`")
-			// using reflect.StructTag(tagValue) is too
-			// limited for what we need :/
-			knownNames := make(map[string]bool)
+			// Compare subsequent names with the first, all have to match
+			var tagName string
 			for _, tag := range strings.Split(tagVal, " ") {
 				l := strings.SplitN(tag, ":", 2)
 				if len(l) < 2 {
 					pass.Reportf(n.Pos(), "no : in %q for %q", tag, tagVal)
 					continue
 				}
-				tagName := l[1]
-				if len(knownNames) == 0 {
+				if tagName == "" {
+					tagName = l[1]
+					if knownNames[tagName] {
+						pass.Reportf(n.Pos(), "duplicate struct tags found in %q", tagVal)
+					}
 					knownNames[tagName] = true
 					continue
 				}
-				if !knownNames[tagName] {
+
+				if tagName != l[1] {
 					pass.Reportf(n.Pos(), "inconsistent struct tags found in %q", tagVal)
 				}
 			}
