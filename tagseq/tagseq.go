@@ -42,7 +42,12 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			// limited for what we need :/
 			knownNames := make(map[string]bool)
 			for _, tag := range strings.Split(tagVal, " ") {
-				tagName := strings.SplitN(tag, ":", 2)[1]
+				l := strings.SplitN(tag, ":", 2)
+				if len(l) < 2 {
+					pass.Reportf(n.Pos(), "no : in %q for %q", tag, tagVal)
+					continue
+				}
+				tagName := l[1]
 				if len(knownNames) == 0 {
 					knownNames[tagName] = true
 					continue
