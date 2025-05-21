@@ -33,6 +33,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		if !ok {
 			return
 		}
+		knownNames := make(map[string]bool)
 		for _, field := range st.Fields.List {
 			if field.Tag == nil {
 				continue
@@ -48,6 +49,10 @@ func run(pass *analysis.Pass) (interface{}, error) {
 				}
 				if tagName == "" {
 					tagName = l[1]
+					if knownNames[tagName] {
+						pass.Reportf(n.Pos(), "duplicate struct tags found in %q", tagVal)
+					}
+					knownNames[tagName] = true
 					continue
 				}
 
