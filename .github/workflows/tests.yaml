@@ -1,4 +1,4 @@
-ame: Go Test
+name: Go Test
 
 on:
   push:
