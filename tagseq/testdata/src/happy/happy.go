@@ -9,3 +9,8 @@ type NoTagsFine struct {
 	A string
 	B int
 }
+
+type IgnoredTagsFine struct {
+	A string `yaml:"-" toml:"-"`
+	B string `yaml:"-" toml:"-"`
+}

@@ -47,7 +47,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 					pass.Reportf(n.Pos(), "no : in %q for %q", tag, tagVal)
 					continue
 				}
-				if tagName == "" {
+				if tagName == "" && l[1] != `"-"` {
 					tagName = l[1]
 					if knownNames[tagName] {
 						pass.Reportf(n.Pos(), "duplicate struct tags found in %q", tagVal)
@@ -56,7 +56,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 					continue
 				}
 
-				if tagName != l[1] {
+				if tagName != l[1] && l[1] != `"-"` {
 					pass.Reportf(n.Pos(), "inconsistent struct tags found in %q", tagVal)
 				}
 			}
